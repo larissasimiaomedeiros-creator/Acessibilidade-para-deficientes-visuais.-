@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AudioCraft – Loja Acessível</title>
+  <link rel="stylesheet" href="estilo.css" />
+  <!-- Lucide icons (SVG inline via JS) -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body>
+
+<!-- Skip link -->
+<a href="#main-content" class="skip-link">Ir para o conteúdo principal</a>
+
+<!-- A11y banner (hidden by default, shown via JS) -->
+<div id="a11y-banner" class="a11y-banner" role="status" aria-live="polite" hidden></div>
+
+<!-- Top login bar -->
+<div class="top-bar">
+  <div class="top-bar-inner">
+    <div id="top-bar-content">
+      <span class="muted">Já tem conta?</span>
+      <button id="btn-open-login" aria-label="Fazer login ou criar conta">
+        <!-- icon injected by JS -->
+        <span id="icon-login"></span> Entrar / Cadastrar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Header -->
+<header>
+  <div class="header-inner">
+    <a href="#" class="logo" aria-label="AudioCraft – página inicial">AudioCraft</a>
+
+    <div class="search-wrap" role="search">
+      <span id="icon-search" aria-hidden="true"></span>
+      <input type="search" id="search-input" class="search-input"
+        placeholder="Buscar produtos…" aria-label="Buscar produtos" autocomplete="off" />
+    </div>
+
+    <nav class="nav-tabs" aria-label="Navegação principal">
+      <button class="nav-tab active" data-tab="produtos" aria-current="page">Produtos</button>
+      <button class="nav-tab" data-tab="sobre">Sobre</button>
+    </nav>
+
+    <a href="#" class="cart-link" aria-label="Ver carrinho de compras">
+      <span id="icon-cart" aria-hidden="true"></span>
+      <span>Carrinho</span>
+    </a>
+  </div>
+</header>
+
+<!-- Main -->
+<main id="main-content">
+
+  <!-- Produtos tab -->
+  <section id="tab-produtos" aria-labelledby="products-heading">
+    <div class="section-header">
+      <h1 id="products-heading" class="section-title">Produtos</h1>
+      <p id="products-count" class="section-count"></p>
+    </div>
+    <div id="product-grid" class="product-grid"></div>
+    <div id="no-results" class="no-results" hidden>
+      <p>Nenhum produto encontrado.</p>
+    </div>
+  </section>
+
+  <!-- Sobre tab -->
+  <section id="tab-sobre" aria-labelledby="about-heading" hidden>
+    <div style="max-width:42rem;margin:0 auto;">
+      <h1 id="about-heading" class="section-title" style="margin-bottom:1.5rem;">Sobre a AudioCraft</h1>
+      <div class="about-desc" style="display:flex;flex-direction:column;gap:1rem;">
+        <p>A <strong>AudioCraft</strong> é uma loja especializada em eletrônicos e periféricos de alta performance, fundada em 2019 com a missão de democratizar o acesso a equipamentos de qualidade profissional.</p>
+        <p>Todos os produtos passam por rigoroso controle de qualidade e são selecionados para oferecer a melhor experiência de uso, seja para trabalho criativo, gaming ou entretenimento cotidiano.</p>
+        <p>Esta página foi construída com foco em <strong>acessibilidade total</strong>: suporte a leitores de tela, navegação por teclado, texto alternativo visível e modo acessível com texto ampliado e narração por áudio.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Detalhe do produto (injected by JS) -->
+  <div id="tab-detail" hidden></div>
+
+</main>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-inner">
+    <p>© 2026 AudioCraft. Todos os direitos reservados.
+      <a href="#">Política de privacidade</a> ·
+      <a href="#">Acessibilidade</a>
+    </p>
+  </div>
+</footer>
+
+<!-- A11y Panel -->
+<div id="a11y-panel" class="a11y-panel" role="dialog" aria-modal="true" aria-labelledby="a11y-title" hidden>
+  <div class="a11y-panel-header">
+    <h2 id="a11y-title">
+      <span id="icon-a11y-panel" aria-hidden="true"></span>
+      Modo Acessível
+    </h2>
+    <button id="btn-panel-close" class="a11y-panel-close" aria-label="Fechar painel de acessibilidade">
+      <span id="icon-x-panel" aria-hidden="true"></span>
+    </button>
+  </div>
+  <!-- Master toggle -->
+  <div class="a11y-panel-row">
+    <div>
+      <p style="font-size:.875rem;font-weight:600;">Ativar modo acessível</p>
+      <small style="color:var(--muted-foreground)">Liga todas as melhorias de acessibilidade</small>
+    </div>
+    <button class="switch" id="switch-master" role="switch" aria-checked="false" aria-label="Ativar modo acessível">
+      <span class="switch-thumb"></span>
+    </button>
+  </div>
+  <!-- Sub options -->
+  <div id="a11y-suboptions">
+    <div class="a11y-panel-row">
+      <div class="a11y-panel-row-inner">
+        <div class="a11y-panel-row-icon"><span id="icon-type" aria-hidden="true"></span></div>
+        <div class="a11y-panel-row-text">
+          <p>Texto aumentado</p>
+          <small>Descrições e botões em tamanho maior</small>
+        </div>
+      </div>
+      <button class="switch" id="switch-text" role="switch" aria-checked="false" aria-label="Texto aumentado">
+        <span class="switch-thumb"></span>
+      </button>
+    </div>
+    <div class="a11y-panel-row">
+      <div class="a11y-panel-row-inner">
+        <div class="a11y-panel-row-icon"><span id="icon-volume" aria-hidden="true"></span></div>
+        <div class="a11y-panel-row-text">
+          <p>Áudio das descrições</p>
+          <small>Leitura em voz alta ao clicar</small>
+        </div>
+      </div>
+      <button class="switch" id="switch-audio" role="switch" aria-checked="false" aria-label="Áudio das descrições">
+        <span class="switch-thumb"></span>
+      </button>
+    </div>
+  </div>
+  <div id="a11y-status-bar" class="a11y-status">
+    <span class="a11y-status-dot" aria-hidden="true"></span>
+    <span id="a11y-status-text">Modo acessível desativado</span>
+  </div>
+</div>
+
+<!-- FAB -->
+<button id="a11y-fab" class="a11y-fab"
+  aria-label="Abrir painel de acessibilidade"
+  aria-expanded="false"
+  aria-haspopup="dialog">
+  <span id="icon-a11y-fab" aria-hidden="true"></span>
+  <span aria-hidden="true">Acessível</span>
+</button>
+
+<!-- Login Modal -->
+<div id="login-modal" class="modal-overlay" hidden>
+  <div class="modal-backdrop" id="modal-backdrop"></div>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="login-title">
+    <div class="modal-header">
+      <h2 id="login-title">Entrar na conta</h2>
+      <button class="modal-close" id="btn-modal-close" aria-label="Fechar">
+        <span id="icon-x-modal" aria-hidden="true"></span>
+      </button>
+    </div>
+    <div class="modal-tabs" role="tablist">
+      <button class="modal-tab active" data-modal-tab="login" role="tab" aria-selected="true">Entrar</button>
+      <button class="modal-tab" data-modal-tab="register" role="tab" aria-selected="false">Cadastrar</button>
+    </div>
+    <form id="login-form" class="modal-form" novalidate>
+      <div class="form-group" id="field-name" hidden>
+        <label for="input-name">Nome completo</label>
+        <input type="text" id="input-name" placeholder="Seu nome" autocomplete="name" />
+      </div>
+      <div class="form-group">
+        <label for="input-email">E-mail</label>
+        <input type="email" id="input-email" placeholder="voce@email.com" required autocomplete="email" />
+      </div>
+      <div class="form-group">
+        <label for="input-password">Senha</label>
+        <input type="password" id="input-password" placeholder="••••••••" required autocomplete="current-password" />
+      </div>
+      <a href="#" class="forgot-link" id="forgot-link">Esqueceu a senha?</a>
+      <button type="submit" class="btn-login">
+        <span id="icon-login-submit" aria-hidden="true"></span>
+        <span id="login-submit-text">Entrar</span>
+      </button>
+    </form>
+  </div>
+</div>
+
+<script>
+// ── Data ─────────────────────────────────────────────────────────────────────
+const PRODUCTS = [
+  {
+    id: 1,
+    name: "Fone de Ouvido Studio Pro",
+    brand: "AudioCraft",
+    price: 1299.0,
+    originalPrice: 1699.0,
+    sku: "AC-SPH-001",
+    imageUrl: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=800&fit=crop&auto=format",
+    imageAlt: "Fone de ouvido over-ear de cor preta, com almofadas acolchoadas em couro sintético preto, arco ajustável em alumínio escovado e cabo removível de 1,5 metros. Posicionado sobre fundo branco limpo, levemente inclinado para a direita.",
+    description: "Qualidade de estúdio em qualquer lugar. Drivers de 40mm, isolamento passivo de ruído e bateria de 30 horas para uma experiência de escuta sem compromissos.",
+    rating: 4,
+    reviewCount: 218,
+    sizes: ["P", "M", "G", "GG"],
+    voltages: ["110V", "220V", "Bivolt"],
+    colors: [{ label: "Preto", value: "black" }, { label: "Prata", value: "silver" }, { label: "Branco", value: "white" }],
+    reviews: [
+      { author: "Mariana S.", date: "28 jul. 2026", rating: 5, text: "Som incrível e muito confortável para longas sessões de escuta. Vale cada centavo." },
+      { author: "Carlos F.", date: "14 jul. 2026", rating: 4, text: "Ótimo fone, bateria dura o dia todo. Só achei o cabo um pouco curto." },
+      { author: "Ana R.", date: "02 jul. 2026", rating: 4, text: "Design elegante e qualidade de áudio excepcional. Recomendo para quem trabalha com música." },
+    ],
+  },
+  {
+    id: 2,
+    name: "Caixa de Som Bluetooth X5",
+    brand: "SoundWave",
+    price: 459.9,
+    originalPrice: 599.9,
+    sku: "SW-BT-X5",
+    imageUrl: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=800&h=800&fit=crop&auto=format",
+    imageAlt: "Caixa de som portátil cilíndrica na cor azul, com grade metálica prateada na frente e alça de transporte em borracha preta na parte superior. Acabamento fosco e resistente à água.",
+    description: "Som 360° com graves profundos. Resistente à água (IPX7), autonomia de 20 horas e conexão Bluetooth 5.3 para até dois dispositivos simultaneamente.",
+    rating: 5,
+    reviewCount: 341,
+    sizes: ["Único"],
+    voltages: ["Bivolt"],
+    colors: [{ label: "Azul", value: "blue" }, { label: "Vermelho", value: "red" }, { label: "Preto", value: "black" }],
+    reviews: [
+      { author: "Pedro M.", date: "05 ago. 2026", rating: 5, text: "Melhor caixa de som que já tive. O som é potente e a bateria dura muito." },
+      { author: "Lúcia T.", date: "20 jul. 2026", rating: 5, text: "Usei na praia e na piscina, é realmente à prova d'água. Som excelente!" },
+      { author: "Rafael K.", date: "10 jul. 2026", rating: 4, text: "Ótima compra, só senti falta de um cabo USB-C incluso na caixa." },
+    ],
+  },
+  {
+    id: 3,
+    name: "Teclado Mecânico TKL Pro",
+    brand: "KeyForge",
+    price: 849.0,
+    originalPrice: 1099.0,
+    sku: "KF-TKL-PRO",
+    imageUrl: "https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=800&h=800&fit=crop&auto=format",
+    imageAlt: "Teclado mecânico compacto sem numpad, layout TKL, com teclas iluminadas em RGB em gradiente azul e roxo. Corpo em alumínio escovado cinza.",
+    description: "Teclado TKL com switches Cherry MX Red, iluminação RGB por tecla, corpo em alumínio CNC e cabo destacável trançado. Ideal para gamers e programadores.",
+    rating: 5,
+    reviewCount: 187,
+    sizes: ["TKL (80%)"],
+    voltages: ["USB"],
+    colors: [{ label: "Cinza", value: "gray" }, { label: "Preto", value: "black" }],
+    reviews: [
+      { author: "Bruna O.", date: "01 ago. 2026", rating: 5, text: "Digitação incrível, switches suaves e RGB lindo. Meu teclado favorito até hoje." },
+      { author: "Diego L.", date: "22 jul. 2026", rating: 5, text: "Build de alumínio é sólida, nenhuma flexão. Vale muito o investimento." },
+      { author: "Fernanda C.", date: "15 jul. 2026", rating: 4, text: "Perfeito para trabalho e jogos. O software RGB poderia ser mais intuitivo." },
+    ],
+  },
+  {
+    id: 4,
+    name: "Mouse Gamer ErgoMax",
+    brand: "PrecisionX",
+    price: 349.9,
+    originalPrice: 449.9,
+    sku: "PX-MG-ERGO",
+    imageUrl: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800&h=800&fit=crop&auto=format",
+    imageAlt: "Mouse gamer ergonômico preto com iluminação RGB lateral em roxo, formato arredondado para mão direita e dois botões extras no polegar.",
+    description: "Sensor óptico de 25.600 DPI, 7 botões programáveis, iluminação RGB de 16 milhões de cores e design ergonômico para sessões prolongadas sem fadiga.",
+    rating: 4,
+    reviewCount: 402,
+    sizes: ["Único"],
+    voltages: ["USB"],
+    colors: [{ label: "Preto", value: "black" }, { label: "Branco", value: "white" }],
+    reviews: [
+      { author: "Thiago B.", date: "03 ago. 2026", rating: 5, text: "Precisão excelente, sensor perfeito para FPS. Ergonomia é a melhor que já usei." },
+      { author: "Camila F.", date: "25 jul. 2026", rating: 4, text: "Muito bom, leve e confortável. RGB é muito bonito, software funciona bem." },
+      { author: "Lucas M.", date: "18 jul. 2026", rating: 3, text: "Boa qualidade, mas o clique do scroll ficou barulhento após 2 semanas." },
+    ],
+  },
+  {
+    id: 5,
+    name: "Webcam Ultra HD 4K",
+    brand: "VisionCast",
+    price: 699.0,
+    originalPrice: 899.0,
+    sku: "VC-WC-4K",
+    imageUrl: "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=800&h=800&fit=crop&auto=format",
+    imageAlt: "Webcam compacta preta com lente grande angular e microfone embutido, montagem universal para monitor com clipe ajustável e cabo USB-C trançado de 2 metros.",
+    description: "Resolução 4K Ultra HD a 30fps, campo visual 90°, foco automático com AI, microfone duplo com cancelamento de ruído e compatibilidade com todas as plataformas de videoconferência.",
+    rating: 4,
+    reviewCount: 156,
+    sizes: ["Único"],
+    voltages: ["USB-C"],
+    colors: [{ label: "Preto", value: "black" }, { label: "Branco", value: "white" }, { label: "Prata", value: "silver" }],
+    reviews: [
+      { author: "Natália G.", date: "07 ago. 2026", rating: 5, text: "Imagem nítida e cores naturais. Perfeita para reuniões e streamings." },
+      { author: "Eduardo P.", date: "30 jul. 2026", rating: 4, text: "Qualidade de imagem surpreendente para o preço. Foco automático funciona bem." },
+      { author: "Isabela V.", date: "12 jul. 2026", rating: 3, text: "Boa câmera, mas o microfone capta bastante ruído de fundo em ambientes barulhentos." },
+    ],
+  },
+];
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function fmt(n) { return n.toFixed(2).replace(".", ","); }
+function discount(p) { return Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100); }
+function stars(rating, size = 18) {
+  return Array.from({ length: 5 }, (_, i) => {
+    const filled = i < rating;
+    return `<svg width="${size}" height="${size}" viewBox="0 0 18 18" fill="${filled ? '#1a3a8f' : 'none'}" stroke="${filled ? '#1a3a8f' : '#bbb'}" stroke-width="1.5" aria-hidden="true"><path d="M9 1.5l2.09 4.26 4.71.68-3.41 3.32.81 4.69L9 12.02l-4.2 2.43.81-4.69L2.2 6.44l4.71-.68L9 1.5z"/></svg>`;
+  }).join("");
+}
+function speak(text, onEnd) {
+  if (!("speechSynthesis" in window)) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "pt-BR"; u.rate = 0.95;
+  if (onEnd) u.onend = onEnd;
+  window.speechSynthesis.speak(u);
+}
+function stopSpeech() { if ("speechSynthesis" in window) window.speechSynthesis.cancel(); }
+
+// ── State ─────────────────────────────────────────────────────────────────────
+const state = {
+  tab: "produtos",
+  detailProduct: null,
+  searchQuery: "",
+  user: null,
+  a11y: { active: false, largeText: false, audioEnabled: false },
+  panelOpen: false,
+  loginOpen: false,
+  loginTab: "login",
+  wished: {},
+  selections: {},   // { productId: { size, voltage, color, qty } }
+};
+
+function getSelection(id) {
+  if (!state.selections[id]) {
+    const p = PRODUCTS.find(x => x.id === id);
+    state.selections[id] = { size: p.sizes[0], voltage: p.voltages[0], color: p.colors[0].value, qty: 1, added: false };
+  }
+  return state.selections[id];
+}
+
+// ── Icons ─────────────────────────────────────────────────────────────────────
+function injectIcons() {
+  const map = {
+    "icon-login": "log-in",
+    "icon-search": "search",
+    "icon-cart": "shopping-cart",
+    "icon-a11y-panel": "accessibility",
+    "icon-x-panel": "x",
+    "icon-type": "type",
+    "icon-volume": "volume-2",
+    "icon-a11y-fab": "accessibility",
+    "icon-x-modal": "x",
+    "icon-login-submit": "log-in",
+  };
+  Object.entries(map).forEach(([id, name]) => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = lucide.createElement(lucide[toPascal(name)]).outerHTML.replace('<svg', '<svg aria-hidden="true"');
+  });
+}
+function toPascal(s) { return s.split("-").map(w => w[0].toUpperCase() + w.slice(1)).join(""); }
+function svgIcon(name, size = 16) {
+  const el = lucide.createElement(lucide[toPascal(name)]);
+  el.setAttribute("width", size); el.setAttribute("height", size);
+  el.setAttribute("aria-hidden", "true");
+  return el.outerHTML;
+}
+
+// ── Render ────────────────────────────────────────────────────────────────────
+function renderAll() {
+  renderBanner();
+  renderTopBar();
+  renderTabs();
+  renderContent();
+  renderPanel();
+  renderFab();
+  applyLargeText();
+}
+
+function renderBanner() {
+  const el = document.getElementById("a11y-banner");
+  if (state.a11y.active) {
+    el.removeAttribute("hidden");
+    el.textContent = "♿ Modo Acessível ativado"
+      + (state.a11y.largeText ? " · Texto aumentado" : "")
+      + (state.a11y.audioEnabled ? " · Áudio habilitado" : "");
+  } else {
+    el.hidden = true;
+  }
+}
+
+function renderTopBar() {
+  const el = document.getElementById("top-bar-content");
+  if (state.user) {
+    el.innerHTML = `<span style="display:inline-flex;align-items:center;gap:.375rem;font-size:.8rem;">
+      ${svgIcon("user", 14)} Olá, <strong>${state.user}</strong>
+    </span>
+    <button id="btn-logout" aria-label="Sair da conta" style="font-size:.8rem;display:inline-flex;align-items:center;gap:.375rem;">
+      ${svgIcon("log-out", 14)} Sair
+    </button>`;
+    document.getElementById("btn-logout").addEventListener("click", () => { state.user = null; renderAll(); });
+  } else {
+    el.innerHTML = `<span class="muted" style="font-size:.8rem;">Já tem conta?</span>
+    <button id="btn-open-login" aria-label="Fazer login ou criar conta" style="font-size:.8rem;display:inline-flex;align-items:center;gap:.375rem;">
+      ${svgIcon("log-in", 14)} Entrar / Cadastrar
+    </button>`;
+    document.getElementById("btn-open-login").addEventListener("click", openLogin);
+  }
+}
+
+function renderTabs() {
+  document.querySelectorAll(".nav-tab").forEach(btn => {
+    const isActive = btn.dataset.tab === state.tab;
+    btn.classList.toggle("active", isActive);
+    btn.setAttribute("aria-current", isActive ? "page" : "false");
+  });
+}
+
+function renderContent() {
+  const tabProd = document.getElementById("tab-produtos");
+  const tabSobre = document.getElementById("tab-sobre");
+  const tabDetail = document.getElementById("tab-detail");
+
+  if (state.tab === "sobre") {
+    tabProd.hidden = true; tabDetail.hidden = true; tabSobre.hidden = false;
+    return;
+  }
+  tabSobre.hidden = true;
+
+  if (state.tab === "produtos" && state.detailProduct) {
+    tabProd.hidden = true; tabDetail.hidden = false;
+    renderDetail(state.detailProduct);
+    return;
+  }
+
+  tabDetail.hidden = true; tabProd.hidden = false;
+  renderProductGrid();
+}
+
+function renderProductGrid() {
+  const q = state.searchQuery.toLowerCase();
+  const filtered = PRODUCTS.filter(p =>
+    p.name.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q)
+  );
+  document.getElementById("products-count").textContent =
+    `${filtered.length} ${filtered.length === 1 ? "produto encontrado" : "produtos encontrados"}`;
+  const grid = document.getElementById("product-grid");
+  const noRes = document.getElementById("no-results");
+  if (filtered.length === 0) { grid.innerHTML = ""; noRes.hidden = false; return; }
+  noRes.hidden = true;
+  grid.innerHTML = filtered.map(p => cardHTML(p)).join("");
+  // bind events
+  filtered.forEach(p => {
+    document.getElementById(`btn-detail-${p.id}`).addEventListener("click", () => {
+      state.detailProduct = p; renderAll();
+    });
+    document.getElementById(`btn-wish-${p.id}`).addEventListener("click", () => {
+      state.wished[p.id] = !state.wished[p.id];
+      renderProductGrid();
+    });
+    if (state.a11y.active && state.a11y.audioEnabled) {
+      bindAudioBtn(`audio-card-${p.id}`, `${p.name}. ${p.description}. Preço: R$ ${fmt(p.price)}.`);
+    }
+  });
+}
+function cardHTML(p) {
+  const disc = discount(p);
+  const wished = !!state.wished[p.id];
+  const audioBtn = state.a11y.active && state.a11y.audioEnabled
+    ? `<button class="btn-audio" id="audio-card-${p.id}" aria-pressed="false" aria-label="Ouvir: ${p.name}">${svgIcon("volume-2", 12)} Ouvir</button>`
+    : "";
+  return `
+  <article class="product-card" aria-label="Produto: ${p.name}">
+    <div class="card-image-wrap">
+      <img src="${p.imageUrl}" alt="${p.imageAlt}" loading="lazy" />
+      <div class="badge-discount" aria-label="${disc}% de desconto">-${disc}%</div>
+      <button class="btn-wish" id="btn-wish-${p.id}"
+        aria-pressed="${wished}"
+        aria-label="${wished ? 'Remover ' + p.name + ' dos favoritos' : 'Adicionar ' + p.name + ' aos favoritos'}">
+        <svg width="16" height="16" viewBox="0 0 24 24"
+          fill="${wished ? '#1a3a8f' : 'none'}"
+          stroke="${wished ? '#1a3a8f' : '#666'}"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+      </button>
+    </div>
+    <div class="card-body">
+      <p class="card-brand">${p.brand}</p>
+      <h3 class="card-name">${p.name}</h3>
+      <div class="card-rating">
+        <div class="stars" role="img" aria-label="${p.rating} de 5 estrelas">${stars(p.rating, 14)}</div>
+        <span class="card-rating-count">(${p.reviewCount})</span>
+      </div>
+      <p class="card-desc">${p.description}</p>
+      <p class="card-price-old">R$ ${fmt(p.originalPrice)}</p>
+      <p class="card-price" aria-label="R$ ${fmt(p.price)}">R$ ${fmt(p.price)}</p>
+      <p class="card-installment">12x de R$ ${fmt(p.price / 12)} sem juros</p>
+      <div class="card-actions">
+        <button class="btn-primary" id="btn-detail-${p.id}" aria-label="Ver detalhes de ${p.name}">
+          ${svgIcon("eye", 15)} Ver produto
+        </button>
+        ${audioBtn}
+      </div>
+    </div>
+  </article>`;
+}
+
+function renderDetail(p) {
+  const sel = getSelection(p.id);
+  const disc = discount(p);
+
+  const selectorGroup = (items, selected, type) => items.map(item => {
+    const val = typeof item === "string" ? item : item.value;
+    const label = typeof item === "string" ? item : item.label;
+    const isSelected = val === selected;
+    return `<button class="selector-btn" data-type="${type}" data-val="${val}"
+      aria-pressed="${isSelected}"
+      aria-label="${label}${isSelected ? ' – selecionado' : ''}">
+      ${label}${isSelected ? ' ✓' : ''}
+    </button>`;
+  }).join("");
+
+  const audioAlt = state.a11y.active && state.a11y.audioEnabled
+    ? `<div style="padding-right:.75rem;"><button class="btn-audio" id="audio-alt-${p.id}" aria-pressed="false" aria-label="Ouvir: descrição da imagem">${svgIcon("volume-2", 12)} Ouvir</button></div>`
+    : "";
+  const audioDesc = state.a11y.active && state.a11y.audioEnabled
+    ? `<button class="btn-audio" id="audio-desc-${p.id}" aria-pressed="false" aria-label="Ouvir: descrição do produto">${svgIcon("volume-2", 12)} Ouvir</button>`
+    : "";
+
+  const reviewsHTML = p.reviews.map(r => {
+    const audioRev = state.a11y.active && state.a11y.audioEnabled
+      ? `<button class="btn-audio" data-audio-review="${r.author}" data-audio-text="${r.author}: ${r.text}" aria-pressed="false" aria-label="Ouvir avaliação de ${r.author}">${svgIcon("volume-2", 12)} Ouvir</button>`
+      : "";
+    return `<article class="review-card" aria-label="Avaliação de ${r.author}">
+      <div class="review-top">
+        <div>
+          <p class="review-author">${r.author}</p>
+          <time class="review-date" datetime="${r.date}">${r.date}</time>
+        </div>
+        <div style="display:flex;align-items:center;gap:.5rem;">
+          <div class="stars" role="img" aria-label="${r.rating} de 5 estrelas">${stars(r.rating, 15)}</div>
+          ${audioRev}
+        </div>
+      </div>
+      <p class="review-text">${r.text}</p>
+    </article>`;
+  }).join("");
+
+  document.getElementById("tab-detail").innerHTML = `
+  <button class="back-btn" id="btn-back">
+    ${svgIcon("chevron-left", 16)} Voltar para Produtos
+  </button>
+  <div class="detail-grid">
+    <div>
+      <figure class="product-figure" aria-labelledby="detail-caption-${p.id}">
+        <div class="product-img-wrap">
+          <img src="${p.imageUrl}" alt="${p.imageAlt}" width="800" height="800" />
+          <div class="badge-discount" aria-label="${disc}% de desconto">-${disc}%</div>
+        </div>
+        <div class="alt-block" role="complementary" aria-label="Descrição detalhada da imagem">
+          <div class="alt-toggle-row">
+            <button class="alt-toggle-btn" id="alt-toggle-${p.id}" aria-expanded="false" aria-controls="alt-content-${p.id}">
+              ${svgIcon("info", 15)}
+              <span style="font-size:.875rem;font-weight:600;">Texto alternativo (Alt Text)</span>
+              <span class="chevron">${svgIcon("chevron-down", 15)}</span>
+            </button>
+            ${audioAlt}
+          </div>
+          <div class="alt-content" id="alt-content-${p.id}" role="region" aria-labelledby="alt-toggle-${p.id}">
+            <div class="alt-content-inner">${p.imageAlt}</div>
+          </div>
+          <div class="alt-preview" id="alt-preview-${p.id}">${p.imageAlt}</div>
+        </div>
+        <figcaption id="detail-caption-${p.id}" style="position:absolute;left:-9999px;">${p.imageAlt}</figcaption>
+      </figure>
+    </div>
+    <div class="info-col">
+      <div>
+        <p class="product-brand">${p.brand}</p>
+        <h2 class="product-name">${p.name}</h2>
+        <p class="product-sku">Ref.: ${p.sku}</p>
+      </div>
+      <div class="rating-row">
+        <div class="stars" role="img" aria-label="${p.rating} de 5 estrelas">${stars(p.rating)}</div>
+        <a href="#product-reviews-${p.id}" class="review-link">${p.reviewCount} avaliações</a>
+      </div>
+      <div aria-label="Preço: R$ ${fmt(p.price)}. Original: R$ ${fmt(p.originalPrice)}">
+        <p class="price-old" aria-hidden="true">R$ ${fmt(p.originalPrice)}</p>
+        <p class="price-main" aria-hidden="true">R$ ${fmt(p.price)}</p>
+        <p class="price-installment">ou 12x de R$ ${fmt(p.price / 12)} sem juros</p>
+      </div>
+      <hr class="divider" />
+      ${p.colors.length ? `<fieldset><legend>Cor: <span>${p.colors.find(c => c.value === sel.color)?.label}</span></legend><div class="selector-group" data-selector-group="color">${selectorGroup(p.colors, sel.color, "color")}</div></fieldset>` : ""}
+      ${p.voltages.length > 1 ? `<fieldset><legend>Voltagem: <span>${sel.voltage}</span></legend><div class="selector-group" data-selector-group="voltage">${selectorGroup(p.voltages, sel.voltage, "voltage")}</div></fieldset>` : ""}
+      ${p.sizes.length > 1 ? `<fieldset><legend>Tamanho: <span>${sel.size}</span></legend><div class="selector-group" data-selector-group="size">${selectorGroup(p.sizes, sel.size, "size")}</div></fieldset>` : ""}
+      <div class="qty-row">
+        <span class="qty-label">Quantidade:</span>
+        <div class="qty-control">
+          <button class="qty-btn" id="qty-minus-${p.id}" aria-label="Diminuir quantidade" ${sel.qty <= 1 ? "disabled" : ""}>−</button>
+          <span class="qty-value" role="status" aria-live="polite" aria-label="Quantidade: ${sel.qty}">${sel.qty}</span>
+          <button class="qty-btn" id="qty-plus-${p.id}" aria-label="Aumentar quantidade">+</button>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.75rem;">
+        <button class="btn-buy-main${sel.added ? ' success' : ''}" id="btn-buy-${p.id}"
+          aria-live="polite"
+          aria-label="${sel.added ? 'Item adicionado ao carrinho' : 'Adicionar ' + sel.qty + ' ao carrinho'}">
+          ${sel.added ? svgIcon("check", 22) + ' Adicionado!' : svgIcon("shopping-cart", 22) + ' Adicionar ao Carrinho'}
+        </button>
+        <button class="btn-secondary" aria-label="Comprar agora – ir para checkout">Comprar Agora</button>
+      </div>
+      <hr class="divider" />
+      <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:.75rem;margin-bottom:.5rem;">
+          <h3 style="font-size:1rem;font-weight:600;">Sobre o produto</h3>
+          ${audioDesc}
+        </div>
+        <p style="font-size:1rem;line-height:1.6;">${p.description}</p>
+      </div>
+      <div class="info-note" role="note" aria-label="Informações de acessibilidade">
+        ${svgIcon("info", 18)}
+        <p>Esta página é compatível com leitores de tela. Use <kbd>Tab</kbd> para navegar. Clique em <strong>♿</strong> para o modo acessível.</p>
+      </div>
+    </div>
+  </div>
+  <section class="reviews-section" id="product-reviews-${p.id}" aria-labelledby="reviews-title-${p.id}">
+    <h3 class="reviews-title" id="reviews-title-${p.id}">Avaliações dos clientes</h3>
+    <div class="reviews-grid">${reviewsHTML}</div>
+  </section>`;
+
+  // Bind detail events
+  document.getElementById("btn-back").addEventListener("click", () => {
+    state.detailProduct = null; renderAll();
+  });
+
+  // Alt toggle
+  const altToggle = document.getElementById(`alt-toggle-${p.id}`);
+  const altContent = document.getElementById(`alt-content-${p.id}`);
+  const altPreview = document.getElementById(`alt-preview-${p.id}`);
+  let altOpen = false;
+  altToggle.addEventListener("click", () => {
+    altOpen = !altOpen;
+    altToggle.setAttribute("aria-expanded", altOpen);
+    altToggle.classList.toggle("expanded", altOpen);
+    altContent.classList.toggle("open", altOpen);
+    altPreview.style.display = altOpen ? "none" : "";
+  });
+
+  // Selectors
+  document.querySelectorAll(".selector-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const type = btn.dataset.type;
+      const val = btn.dataset.val;
+      sel[type] = val;
+      renderDetail(p);
+    });
+  });
+
+  // Qty
+  document.getElementById(`qty-minus-${p.id}`).addEventListener("click", () => {
+    if (sel.qty > 1) { sel.qty--; renderDetail(p); }
+  });
+  document.getElementById(`qty-plus-${p.id}`).addEventListener("click", () => {
+    sel.qty++; renderDetail(p);
+  });
+
+  // Buy
+  document.getElementById(`btn-buy-${p.id}`).addEventListener("click", () => {
+    sel.added = true; renderDetail(p);
+    setTimeout(() => { sel.added = false; renderDetail(p); }, 2500);
+  });
+
+  // Audio buttons
+  if (state.a11y.active && state.a11y.audioEnabled) {
+    const altAudioEl = document.getElementById(`audio-alt-${p.id}`);
+    if (altAudioEl) bindAudioBtn(`audio-alt-${p.id}`, p.imageAlt);
+    const descAudioEl = document.getElementById(`audio-desc-${p.id}`);
+    if (descAudioEl) bindAudioBtn(`audio-desc-${p.id}`, p.description);
+    document.querySelectorAll("[data-audio-review]").forEach(btn => {
+      bindAudioBtn(null, btn.dataset.audioText, btn);
+    });
+  }
+}
+
+function bindAudioBtn(id, text, el) {
+  const btn = el || document.getElementById(id);
+  if (!btn) return;
+  let playing = false;
+  btn.addEventListener("click", () => {
+    if (playing) {
+      stopSpeech(); playing = false;
+      btn.setAttribute("aria-pressed", "false");
+      btn.innerHTML = svgIcon("volume-2", 12) + " Ouvir";
+      btn.classList.remove("playing");
+    } else {
+      playing = true;
+      btn.setAttribute("aria-pressed", "true");
+      btn.innerHTML = svgIcon("volume-x", 12) + " Parar";
+      btn.classList.add("playing");
+      speak(text, () => {
+        playing = false;
+        btn.setAttribute("aria-pressed", "false");
+        btn.innerHTML = svgIcon("volume-2", 12) + " Ouvir";
+        btn.classList.remove("playing");
+      });
+    }
+  });
+}
+
+function renderPanel() {
+  const panel = document.getElementById("a11y-panel");
+  panel.hidden = !state.panelOpen;
+  updateSwitch("switch-master", state.a11y.active);
+  updateSwitch("switch-text", state.a11y.active && state.a11y.largeText);
+  updateSwitch("switch-audio", state.a11y.active && state.a11y.audioEnabled);
+  const subopts = document.getElementById("a11y-suboptions");
+  subopts.classList.toggle("a11y-options-disabled", !state.a11y.active);
+  subopts.setAttribute("aria-disabled", !state.a11y.active);
+  const statusBar = document.getElementById("a11y-status-bar");
+  const statusText = document.getElementById("a11y-status-text");
+  statusBar.classList.toggle("on", state.a11y.active);
+  if (state.a11y.active) {
+    const extras = [state.a11y.largeText && "texto maior", state.a11y.audioEnabled && "áudio"].filter(Boolean);
+    statusText.textContent = "Ativo" + (extras.length ? " · " + extras.join(" · ") : " · sem opções extras");
+  } else {
+    statusText.textContent = "Modo acessível desativado";
+  }
+}
+
+function updateSwitch(id, checked) {
+  const sw = document.getElementById(id);
+  if (!sw) return;
+  sw.classList.toggle("on", checked);
+  sw.setAttribute("aria-checked", checked);
+}
+
+function renderFab() {
+  const fab = document.getElementById("a11y-fab");
+  fab.classList.toggle("active", state.a11y.active);
+  fab.setAttribute("aria-expanded", state.panelOpen);
+  fab.setAttribute("aria-label", state.panelOpen ? "Fechar painel de acessibilidade" : "Abrir painel de acessibilidade");
+}
+
+function applyLargeText() {
+  document.body.classList.toggle("large-text", state.a11y.active && state.a11y.largeText);
+}
+
+// ── Login Modal ───────────────────────────────────────────────────────────────
+function openLogin() { state.loginOpen = true; renderLoginModal(); }
+function closeLogin() { state.loginOpen = false; document.getElementById("login-modal").hidden = true; }
+
+function renderLoginModal() {
+  const modal = document.getElementById("login-modal");
+  modal.hidden = false;
+  document.getElementById("login-title").textContent = state.loginTab === "login" ? "Entrar na conta" : "Criar conta";
+  document.querySelectorAll(".modal-tab").forEach(t => {
+    const active = t.dataset.modalTab === state.loginTab;
+    t.classList.toggle("active", active);
+    t.setAttribute("aria-selected", active);
+  });
+  const fieldName = document.getElementById("field-name");
+  fieldName.hidden = state.loginTab !== "register";
+  document.getElementById("login-submit-text").textContent = state.loginTab === "login" ? "Entrar" : "Criar minha conta";
+  document.getElementById("forgot-link").style.display = state.loginTab === "login" ? "" : "none";
+  const pwdInput = document.getElementById("input-password");
+  pwdInput.setAttribute("autocomplete", state.loginTab === "login" ? "current-password" : "new-password");
+  document.getElementById("btn-modal-close").focus();
+}
+
+// ── Event Bindings ────────────────────────────────────────────────────────────
+function bindEvents() {
+  // Nav tabs
+  document.querySelectorAll(".nav-tab").forEach(btn => {
+    btn.addEventListener("click", () => {
+      state.tab = btn.dataset.tab;
+      state.detailProduct = null;
+      renderAll();
+    });
+  });
+
+  // Search
+  document.getElementById("search-input").addEventListener("input", e => {
+    state.searchQuery = e.target.value;
+    if (state.tab === "produtos" && !state.detailProduct) renderContent();
+    else { state.tab = "produtos"; state.detailProduct = null; renderAll(); }
+  });
+
+  // FAB
+  document.getElementById("a11y-fab").addEventListener("click", () => {
+    state.panelOpen = !state.panelOpen;
+    renderPanel(); renderFab();
+    if (state.panelOpen) document.getElementById("btn-panel-close").focus();
+  });
+
+  // Panel close
+  document.getElementById("btn-panel-close").addEventListener("click", () => {
+    state.panelOpen = false; renderPanel(); renderFab();
+    document.getElementById("a11y-fab").focus();
+  });
+
+  // Switches
+  document.getElementById("switch-master").addEventListener("click", () => {
+    state.a11y.active = !state.a11y.active;
+    renderAll();
+  });
+  document.getElementById("switch-text").addEventListener("click", () => {
+    if (!state.a11y.active) return;
+    state.a11y.largeText = !state.a11y.largeText;
+    renderAll();
+  });
+  document.getElementById("switch-audio").addEventListener("click", () => {
+    if (!state.a11y.active) return;
+    state.a11y.audioEnabled = !state.a11y.audioEnabled;
+    renderAll();
+  });
+
+  // Escape closes panel
+  window.addEventListener("keydown", e => {
+    if (e.key === "Escape") {
+      if (state.panelOpen) { state.panelOpen = false; renderPanel(); renderFab(); document.getElementById("a11y-fab").focus(); }
+      if (state.loginOpen) closeLogin();
+    }
+  });
+
+  // Login modal tabs
+  document.querySelectorAll(".modal-tab").forEach(btn => {
+    btn.addEventListener("click", () => { state.loginTab = btn.dataset.modalTab; renderLoginModal(); });
+  });
+
+  // Modal close & backdrop
+  document.getElementById("btn-modal-close").addEventListener("click", closeLogin);
+  document.getElementById("modal-backdrop").addEventListener("click", closeLogin);
+
+  // Login form submit
+  document.getElementById("login-form").addEventListener("submit", e => {
+    e.preventDefault();
+    const email = document.getElementById("input-email").value;
+    const name = document.getElementById("input-name").value;
+    state.user = state.loginTab === "register"
+      ? (name || email.split("@")[0])
+      : email.split("@")[0];
+    closeLogin();
+    renderAll();
+  });
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+window.addEventListener("DOMContentLoaded", () => {
+  injectIcons();
+  bindEvents();
+  renderAll();
+});
+</script>
+</body>
+</html>
