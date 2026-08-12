@@ -828,8 +828,27 @@ function bindEvents() {
     }
   });
 
+  // Login modal tabs
+  document.querySelectorAll(".modal-tab").forEach(btn => {
+    btn.addEventListener("click", () => { state.loginTab = btn.dataset.modalTab; renderLoginModal(); });
+  });
 
+  // Modal close & backdrop
+  document.getElementById("btn-modal-close").addEventListener("click", closeLogin);
+  document.getElementById("modal-backdrop").addEventListener("click", closeLogin);
 
+  // Login form submit
+  document.getElementById("login-form").addEventListener("submit", e => {
+    e.preventDefault();
+    const email = document.getElementById("input-email").value;
+    const name = document.getElementById("input-name").value;
+    state.user = state.loginTab === "register"
+      ? (name || email.split("@")[0])
+      : email.split("@")[0];
+    closeLogin();
+    renderAll();
+  });
+}
 // ── Init ──────────────────────────────────────────────────────────────────────
 window.addEventListener("DOMContentLoaded", () => {
   injectIcons();
