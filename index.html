@@ -753,7 +753,7 @@ function applyLargeText() {
 
 // ── Login Modal ───────────────────────────────────────────────────────────────
 function openLogin() { state.loginOpen = true; renderLoginModal(); }
-function closeLogin() { state.loginOpen = false; document.getElementById("login-modal").hidden = true; }
+function closeLogin() { state.loginOpen = false; document.getElementById("login-modal").hidden = true; document.getElementById("login-modal").style.display = "none";  }
 
 function renderLoginModal() {
   const modal = document.getElementById("login-modal");
