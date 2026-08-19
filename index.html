@@ -757,6 +757,7 @@ function closeLogin() { state.loginOpen = false; document.getElementById("login-
 
 function renderLoginModal() {
   const modal = document.getElementById("login-modal");
+  modal.style.display = block;
   modal.hidden = false;
   document.getElementById("login-title").textContent = state.loginTab === "login" ? "Entrar na conta" : "Criar conta";
   document.querySelectorAll(".modal-tab").forEach(t => {
